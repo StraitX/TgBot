@@ -11,9 +11,16 @@ struct KeyboardButton {
     String Text;
     String CallbackData;
 
+    KeyboardButton() = default;
+
+    KeyboardButton(const KeyboardButton &) = default;
+
     KeyboardButton(KeyboardButton &&) = default;
 
+    KeyboardButton &operator=(const KeyboardButton &) = default;
+
     KeyboardButton &operator=(KeyboardButton &&) = default;
+
 
     KeyboardButton(String text, String callback_data) :
         Text(Move(text)),
