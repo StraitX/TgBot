@@ -68,7 +68,8 @@ public:
     
     template<typename...ArgsType>
     void Log(const char *fmt, const ArgsType&...args) {
-        m_OnLog(Format(fmt, args...));
+        SX_ASSERT(m_OnLog.IsBound());
+        m_OnLog.TryCall(Format(fmt, args...));
     }
 
     void BindOnMessage(Function<void(TgBot::Message::Ptr)> callback);
