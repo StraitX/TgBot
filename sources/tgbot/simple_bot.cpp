@@ -85,7 +85,7 @@ TgBot::Message::Ptr SimpleBot::SendMessage(const TgBot::Message::Ptr& source, co
 }
 
 void SimpleBot::EditMessage(TgBot::Message::Ptr message, const String& text, const KeyboardLayout& keyboard) {
-    EditMessage(message, text, ToInlineKeyboardMarkup(keyboard));
+    EditMessage(message, text, keyboard);
 }
 
 TgBot::Message::Ptr SimpleBot::SendKeyboard(const TgBot::Message::Ptr& source, const String& message, const KeyboardLayout& keyboard) {
@@ -106,11 +106,11 @@ void SimpleBot::EditMessage(TgBot::Message::Ptr message, const String& text, TgB
 }
 
 void SimpleBot::EditMessage(TgBot::Message::Ptr message, const KeyboardLayout& keyboard) {
-    EditMessage(message, String::Empty, ToInlineKeyboardMarkup(keyboard));
+    EditMessage(message, String::Empty, keyboard);
 }
 
 void SimpleBot::EditMessage(TgBot::Message::Ptr message, const String& text) {
-    EditMessage(message, text, nullptr);
+    EditMessage(message, text, TgBot::GenericReply::Ptr(nullptr));
 }
 
 bool SimpleBot::AnswerCallbackQuery(const std::string& callbackQueryId, const String& text) {
@@ -122,6 +122,11 @@ bool SimpleBot::AnswerCallbackQuery(const std::string& callbackQueryId, const St
         Log("Failed to answer callback query %", callbackQueryId);
     }
     return false;
+}
+
+List<TgBot::ChatMember::Ptr> SimpleBot::GetChatAdministrators(boost::variant<int64_t, std::string> chat_id) const
+{
+    return getApi().getChatAdministrators(chat_id);
 }
 
 void SimpleBot::DeleteMessage(TgBot::Message::Ptr message) {

@@ -63,6 +63,8 @@ public:
     void DeleteMessage(TgBot::Message::Ptr message);
 
     bool AnswerCallbackQuery(const std::string& callbackQueryId, const String& text = String::Empty);
+
+    List<TgBot::ChatMember::Ptr> GetChatAdministrators(boost::variant<int64_t, std::string> chat_id)const;
     
     template<typename...ArgsType>
     void Log(const char *fmt, const ArgsType&...args) {
