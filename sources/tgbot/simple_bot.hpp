@@ -39,10 +39,17 @@ namespace Keyboard {
     KeyboardLayout ToKeyboard(ConstSpan<String> texts);
 }
 
+inline std::string MakeTagLink(const std::string& tag) {
+    std::string link = "https://t.me/" + tag;
+	return "<a href=\"" + link + "\">" + tag + "</a>";
+}
+
 class SimpleBot: private TgBot::Bot {
     Function<void(String)> m_OnLog;
+    String m_ParseMode;
+    bool m_DisableWebpagePreview = true;
 public:
-    SimpleBot(const String& token);
+    SimpleBot(const String& token, const String &parse_mode = "HTML");
 
     int Run();
 

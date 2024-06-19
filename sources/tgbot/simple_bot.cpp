@@ -36,8 +36,9 @@ TgBot::InlineKeyboardMarkup::Ptr ToInlineKeyboardMarkup(const KeyboardLayout &ke
     return keyboard_markup;
 }
 
-SimpleBot::SimpleBot(const String& token):
-    TgBot::Bot(token)
+SimpleBot::SimpleBot(const String& token, const String &parse_mode):
+    TgBot::Bot(token),
+    m_ParseMode(parse_mode)
 {}
 
 int SimpleBot::Run() {
@@ -71,7 +72,7 @@ TgBot::Message::Ptr SimpleBot::SendMessage(const TgBot::Message::Ptr& source, co
     TgBot::Message::Ptr result = nullptr;
 
     try {
-        result = getApi().sendMessage(source->chat->id, message, false, 0, reply, "", false, {}, false, false, source->isTopicMessage ? source->messageThreadId : 0);
+        result = getApi().sendMessage(source->chat->id, message, m_DisableWebpagePreview, 0, reply, m_ParseMode, false, {}, false, false, source->isTopicMessage ? source->messageThreadId : 0);
     }
     catch (const std::exception& exception) {
         auto chat = source->chat;
@@ -95,7 +96,7 @@ TgBot::Message::Ptr SimpleBot::SendKeyboard(const TgBot::Message::Ptr& source, c
 void SimpleBot::EditMessage(TgBot::Message::Ptr message, const String& text, TgBot::GenericReply::Ptr reply) {
     try{
         if (text.size()) {
-            getApi().editMessageText(text, message->chat->id, message->messageId, "", "", false, reply);
+            getApi().editMessageText(text, message->chat->id, message->messageId, "", m_ParseMode, m_DisableWebpagePreview, reply);
         } else {
             getApi().editMessageReplyMarkup(message->chat->id, message->messageId, "", reply);
         }
@@ -138,23 +139,23 @@ void SimpleBot::DeleteMessage(TgBot::Message::Ptr message) {
 }
 
 void SimpleBot::BindOnMessage(Function<void(TgBot::Message::Ptr)> callback){
-    getEvents().onNonCommandMessage([&](auto message) { callback.TryCall(message); });
+    getEvents().onNonCommandMessage([callback = std::move(callback)](auto message) mutable { callback.TryCall(message); });
 }
 
 void SimpleBot::BindOnUnknownCommand(Function<void(TgBot::Message::Ptr)> callback) {
-    getEvents().onUnknownCommand([&](auto message) { callback.TryCall(message); });
+    getEvents().onUnknownCommand([callback = std::move(callback)](auto message) mutable { callback.TryCall(message); });
 }
 
 void SimpleBot::BindOnCommand(const String &command, Function<void(TgBot::Message::Ptr)> callback) {
-    getEvents().onCommand(command, [&](auto message) { callback.TryCall(message); });
+    getEvents().onCommand(command, [callback = std::move(callback)](auto message) mutable { callback.TryCall(message); });
 }
 
 void SimpleBot::BindOnCommand(std::initializer_list<std::string> commands, Function<void(TgBot::Message::Ptr)> callback) {
-    getEvents().onCommand(commands, [&](auto message) { callback.TryCall(message); });
+    getEvents().onCommand(commands, [callback = std::move(callback)](auto message) mutable { callback.TryCall(message); });
 }
 
 void SimpleBot::BindOnCallbackQuery(Function<void(TgBot::CallbackQuery::Ptr)> callback) {
-    getEvents().onCallbackQuery([&](auto query) { callback.TryCall(query); });
+    getEvents().onCallbackQuery([callback = std::move(callback)](auto query) mutable { callback.TryCall(query); });
 }
 
 void SimpleBot::BindOnLog(Function<void(String)> callback) {
