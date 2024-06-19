@@ -139,23 +139,23 @@ void SimpleBot::DeleteMessage(TgBot::Message::Ptr message) {
 }
 
 void SimpleBot::BindOnMessage(Function<void(TgBot::Message::Ptr)> callback){
-    getEvents().onNonCommandMessage([callback = std::move(callback)](auto message) mutable { callback.TryCall(message); });
+    getEvents().onNonCommandMessage([=](TgBot::Message::Ptr message) mutable { callback.TryCall(message); });
 }
 
 void SimpleBot::BindOnUnknownCommand(Function<void(TgBot::Message::Ptr)> callback) {
-    getEvents().onUnknownCommand([callback = std::move(callback)](auto message) mutable { callback.TryCall(message); });
+    getEvents().onUnknownCommand([=](TgBot::Message::Ptr message) mutable { callback.TryCall(message); });
 }
 
 void SimpleBot::BindOnCommand(const String &command, Function<void(TgBot::Message::Ptr)> callback) {
-    getEvents().onCommand(command, [callback = std::move(callback)](auto message) mutable { callback.TryCall(message); });
+    getEvents().onCommand(command, [=](TgBot::Message::Ptr message) mutable { callback.TryCall(message); });
 }
 
 void SimpleBot::BindOnCommand(std::initializer_list<std::string> commands, Function<void(TgBot::Message::Ptr)> callback) {
-    getEvents().onCommand(commands, [callback = std::move(callback)](auto message) mutable { callback.TryCall(message); });
+    getEvents().onCommand(commands, [=](TgBot::Message::Ptr message) mutable { callback.TryCall(message); });
 }
 
 void SimpleBot::BindOnCallbackQuery(Function<void(TgBot::CallbackQuery::Ptr)> callback) {
-    getEvents().onCallbackQuery([callback = std::move(callback)](auto query) mutable { callback.TryCall(query); });
+    getEvents().onCallbackQuery([=](TgBot::CallbackQuery::Ptr query) mutable { callback.TryCall(query); });
 }
 
 void SimpleBot::BindOnLog(Function<void(String)> callback) {
